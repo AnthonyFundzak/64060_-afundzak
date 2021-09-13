@@ -1,0 +1,9 @@
+Importing Data
+> Major_Sport_Venues_Usage <- read.csv("~/Desktop/Major_Sport_Venues_Usage.csv")
+>   View(Major_Sport_Venues_Usage)
+Transforming a Variable: Showing Teams in American League only
+transform1 <- filter(Major_Sport_Venues_Usage, LEAGUE == "AMERICAN")
+Plot at least one quantitative variable : Histogram of venue capacitites for American League teams
+ggplot(transform1) + geom_histogram(aes(x = USE_POP)
+Plot a scatter plot: Ploting the venue capacities for the American League Teams
+transform1 %>% ggplot(aes(x=USE_POP, y=TEAM, color = USE_POP))
