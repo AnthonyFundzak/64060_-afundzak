@@ -1,0 +1,97 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+---
+Initial Task: Partion and Train Data into 60/40 Split
+> Index_Train <- createDataPartition(UniversalBank_2$Online, p=.06, list=FALSE)
+> Train <- UniversalBank_2[Index_Train,]
+> Test <- UniversalBank_2[-Index_Train,]
+Anwsers for Assignment 3
+A)
+Melting and casting the data first then creating a pivot table with those same variable:
+> Melt.01 <- melt(Test, id=c("Online", "CreditCard", "Personal.Loan"))
+> cast.01 <- cast(Melt.01, CreditCard~variable, Personal.Loan~variable, count)
+Creating Pivot table from data:
+The following pivot table is conveying the totals of online users using online banking and credit cards with personal loans to their name. CreditCard and Personal Loan make up the rows, while Online makes up the column. The n() gives us a count of each statistic.
+> qpvt(Train, c("CreditCard", "Personal Loan"), "Online", "n()")
+              0     1     Total  
+0      0       769  1149   1918  
+       1        74   127    201  
+       Total   843  1276   2119  
+1      0       321   473    794  
+       1        36    51     87  
+       Total   357   524    881  
+Total         1200  1800   3000  
+B)
+Looking for a loan acceptance (1) and having a credit card in their account (1) we see that comes to a total of 524 users. Being an active online banking user we see a total of 51 users. Using these two numbers we calculate 51/524= .0973 or 9.73% is the probability of the customer accepting the loan offer. 
+C) 
+Loan is the row as a fucnction of Online, the column.
+> qpvt(Train, c("Personal Loan"), "Online", "n()")
+       0     1     Total  
+0      1090  1622   2712  
+1       110   178    288  
+Total  1200  1800   3000  
+Loan is the row as a function of CreditCard, the column.
+> qpvt(Train, c("Personal Loan"), "CreditCard", "n()")
+       0     1    Total  
+0      1918  794   2712  
+1       201   87    288  
+Total  2119  881   3000  
+D)
+I. Calculating the proportion of CreditCard customers among the loan acceptor customers. 87/288 = .3021 of 30.21% of credicard users accept their loan offers.
+II. Calculating the proportion of Online customers among Loan acceptance. 178/288 = .6181 or 61.81% of online customers accept their loan offers.
+III. Calculating the proportion of loan acceptors among total customers. 288/3000 = .096 or 9.6% of all customers accpet their loan offers.
+IV. Calculating the proportion of credit card users among those who do not accept their loan offers. 1918/2712 = .7072 or 70.72% of credit card users do not accept their loan offer.
+V. Calculating the proportion of online banking customers among  those who dont accpet the loan offer. 1622/1918 = .8457 or 84.57% of online banking customer do not accpet loan offer.
+VI. Calculating percentage of customers who do not accept loan offer to full customer range. 1918/3000 = .6393 or 63.93 % of the banks customers do not accpet loans with them. 
+E)
+library(caret), library(ISLR), library(e1071)
+> nb_model <- naiveBayes(PersonalLoan~CreditCard+Online, data = Train)
+> predicted_test_labels <- predict(nb_model,Test)
+> CrossTable(x=Test$PersonalData,y=predicted_test_labels, prop.chisq = FALSE)
+   Cell Contents
+|-------------------------|
+|                       N |
+|           N / Row Total |
+|           N / Col Total |
+|         N / Table Total |
+|-------------------------|
+
+ 
+Total Observations in Table:  4700 
+
+ 
+             | predicted_test_labels 
+ Test$Online |         0 |         1 | Row Total | 
+-------------|-----------|-----------|-----------|
+           0 |      1905 |         0 |      1905 | 
+             |     1.000 |     0.000 |     0.405 | 
+             |     1.000 |     0.000 |           | 
+             |     0.405 |     0.000 |           | 
+-------------|-----------|-----------|-----------|
+           1 |         0 |      2795 |      2795 | 
+             |     0.000 |     1.000 |     0.595 | 
+             |     0.000 |     1.000 |           | 
+             |     0.000 |     0.595 |           | 
+-------------|-----------|-----------|-----------|
+Column Total |      1905 |      2795 |      4700 | 
+             |     0.405 |     0.595 |           | 
+-------------|-----------|-----------|-----------|
+> predicted_test_labels <- predict(nb_model,Test, type = "raw")
+> head(predicted_test_labels)
+                0            1
+[1,] 9.999964e-01 3.558412e-06
+[2,] 9.999964e-01 3.558412e-06
+[3,] 9.999964e-01 3.558412e-06
+[4,] 9.999964e-01 3.558412e-06
+[5,] 9.999938e-01 6.225613e-06
+[6,] 1.765718e-06 9.999982e-01
+F)
+The pivot table is more of an accurate estimate than the naive bayes here. This is becuase naive bayes assumes that variables are independent of each other and makes predictions off indpendence which can lead to high levels of error if variables are dependent on one another. The probabilites of default, calculated above with head(predicted_test_labels), are very high whihc again points tot he pivot table being a better estimator. 
+G)
+The entries needed for computing P(Loan = 1 | CC=1,Online=1) that correspond on both tables are the entires of CC=1 and Online=1. This is because in order for the situation to be Loan=1, there also needs to be CC=1, Online=1.
+nb_model <- naiveBayes(Online~CreditCard+PersonalLoan, data = Train)
+> predicted_test_labels <- predict(nb_model,Test)
+> CrossTable(x=Test$Online,y=predicted_test_labels, prop.chisq = FALSE)
+   Cell Contents
