@@ -1,0 +1,83 @@
+---
+title: "Assignment 4"
+author: "Anthony Fundzak"
+date: "11/7/2021"
+output: html_document
+---
+library(tidyverse)
+library(factoextra)
+library(ISLR)
+A)
+The following code is used to get only numeric variables/columns 
+> Pharmaceuticals_Numerics <- Pharmaceuticals[, -c(12,12,13,14)]
+The following gives us a base summary where we can compare the pharmacutical companies. I chose to do this as a first step cluster becuase if gives basic mathamatical terms such as mid, max, min, etc., that the majority of poeple and stakeholders should be able to understand.
+> summary(Pharmaceuticals_Numerics)
+    Symbol            Market_Cap          Beta           PE_Ratio          ROE            ROA        Asset_Turnover    Leverage     
+ Length:21          Min.   :  0.41   Min.   :0.1800   Min.   : 3.60   Min.   : 3.9   Min.   : 1.40   Min.   :0.3    Min.   :0.0000  
+ Class :character   1st Qu.:  6.30   1st Qu.:0.3500   1st Qu.:18.90   1st Qu.:14.9   1st Qu.: 5.70   1st Qu.:0.6    1st Qu.:0.1600  
+ Mode  :character   Median : 48.19   Median :0.4600   Median :21.50   Median :22.6   Median :11.20   Median :0.6    Median :0.3400  
+                    Mean   : 57.65   Mean   :0.5257   Mean   :25.46   Mean   :25.8   Mean   :10.51   Mean   :0.7    Mean   :0.5857  
+                    3rd Qu.: 73.84   3rd Qu.:0.6500   3rd Qu.:27.90   3rd Qu.:31.0   3rd Qu.:15.00   3rd Qu.:0.9    3rd Qu.:0.6000  
+                    Max.   :199.47   Max.   :1.1100   Max.   :82.50   Max.   :62.9   Max.   :20.30   Max.   :1.1    Max.   :3.5100  
+   Rev_Growth    Net_Profit_Margin
+ Min.   :-3.17   Min.   : 2.6     
+ 1st Qu.: 6.38   1st Qu.:11.2     
+ Median : 9.37   Median :16.1     
+ Mean   :13.37   Mean   :15.7     
+ 3rd Qu.:21.87   3rd Qu.:21.1     
+ Max.   :34.21   Max.   :25.5  
+By default, using the Euclidean distance as a standard. As the distance measure is sensitive to scale too, normalize it and then scale it. I chose to do this because it can show distances closely related or far outliers. Having the small dataset of only 21 pharmacueticals you can see less congestion on the distance plot and it lets you come to eaiser conclusions. Below will be how i found those conclusions and what i saw in the distance plot.
+ > Pharmaceuticals_Numerics_DF <- scale(Pharmaceuticals_Numerics)
+ Following scaling data, we find the euclidean distance
+ > distance <- get_dist(Pharmaceuticals_Numerics_DF)
+ Following finding euclidean distance, we find distance between means using fviz_dist, creating a chart.
+ > fviz_dist(distance)
+  We can see that with most of the high values in purple being in the top left, that is where medians lay for the data.
+Next I use kmeans package to cluster with 3 clusters and 21 restarts since there are 21 pharmacuetical companies. I chose to do 3 clusters becuase that would have 7 pharmacuwtical companies in each cluster and an even total of three clusters. Having 3 clusters is also benifical becuase you can get a majority, 2 out of 3 clusters, if they look and act alike to help tell the story on the data.
+![Distance Plot fviz_dist.](DistancePlot fviz.png)
+k3 <- kmeans(distance, centers = 3, nstart=21)
+> k3$centers
+         1        2        3        4        5        6        7        8
+1 4.589594 4.528094 4.231766 4.987611 4.235927 3.856088 5.218554 4.008697
+2 3.126059 6.172587 4.262962 2.641896 4.067935 6.461461 2.795819 6.360037
+3 1.880018 4.592053 2.357466 2.290314 2.340034 4.696488 2.519820 5.131314
+         9       10       11       12       13       14       15       16
+1 3.673850 5.269633 6.858501 3.404045 5.745904 3.500692 5.783688 5.414790
+2 6.031862 3.253056 2.264922 4.574402 2.221645 5.450799 2.159718 4.008265
+3 4.684543 2.423207 4.346362 2.729246 3.227943 3.804988 3.381177 2.730795
+        17       18       19       20       21
+1 6.578518 4.031857 4.614286 4.402586 5.510135
+2 2.350388 5.041790 3.239175 4.984873 3.097976
+3 4.458975 3.091979 2.002669 2.795271 3.674740
+Next we look at the size of the clusters and can see that the varities are spead very low or high which matches the results shown in the distance measure and visualized plot. 
+![Cluster fviz_clusters.](fviz_cluster 3 clusters.png)
+> k3$size
+[1]  5  5 11
+I next visualize the cluster so we can better understand what each cluster is telling us. Here we see clusters one and two which include the first 7 pharmacies each, 14 total, seem to show and represent closer data than the next 7 pharmacies making up the third cluster.
+fviz_cluster(k6, data = distance).
+Next I use clustering with manhattan distance. I use this as another form of clustering becuase looking at the absolute differences, medians, it gives a better look at the natural data that each pharmacuetical company list about thier company. This data is good for numerical sets becuase it uses original, non square or distored numbers, just data from the original data set. This
+> k3 = kcca(distance, k=3, kccaFamily("kmedians"))
+> k3
+kcca object of family ‘kmedians’ 
+call:
+kcca(x = distance, k = 3, family = kccaFamily("kmedians"))
+cluster sizes:
+ 1  2  3 
+ 5 11  5 
+Next, I went ahead and looked at this as an image rather than just nummbers. Clusters to me are often easier to visualize and tell informaition off of rather than looking at the raw data.
+![Clustering manhattan.](kmeans clustering manhattan.png)
+> clusters_predictions <- predict(k3)
+> image(k3)
+> points(distance, col=clusters_predictions, pch=21, cex=.03)
+The clusters are slighlty different from where they are located based off of the euclidean distancing and deviated numbers used for those clusters.
+B) When visualizing the clusters so we can better understand what each cluster is telling us, we see clusters three and two seem to show and represent closer data than the 3rd cluster which has the most points in it, 11,  compared to 5 for each of cluster two and three.
+Cluster one, the biggest cluser, has the lowest of the numeric categories but also the most resets in it, 11. This can tell us that the means of the whole collective of the pharmacuetical companies are more closely related to cluster 1 as opposed to two and three. Cluster two, being located in the top left of the cluster plot shows that it has the highest averages on leverage, ROE, ROA, market caps  amongst other high averages, showing successfull pharmacueticals. Cluster 3 is the cluster that has near averages/medians for all its data sets. It represents pharmacutical companies in the iddle of the line, not overly successful but not failing. 
+C) 
+Yes, I see a slight pattern in the numeric variables 10-12. The moderate buy cooresponds with the cluster points that are closer to the middle of the chart and exisit throughout the cluster 3. Cluster 3, the cluster with most middle points, make sense to have a moderate buy becuase it is succeeded in ROA but not by large margins we see in cluster 2. Cluster 2 I see has a pattern of holds in median reccomendations. This can be beacause of its high success with ROE, ROA, and market caps, so the recmendation of hold runs throughout cluter 2. Location and exchange have so few different variables that patterns cannot be made and assumed with the data. Another pattern I see is in cluster 1 where plenty of moderate sells and holds exist. This can be attributed to results of lower market caps, low leverages, and low net profit margins. 
+D)
+Cluster 1: The Littles: Low leverages, low market caps, low net profits, moderate sells, low assett turnover, low ROA
+Cluster 2: The Superiors: High ROA and ROE, high market caps, high leverage, high rev growth, high net profit margin
+Cluster 3: The Middles: Average leverages, average ROA and ROE, hold recommendations, average leverage and rev growth
+![Caption for the picture.](DistancePlot fviz.png)
+
+ 
