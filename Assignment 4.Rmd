@@ -35,6 +35,7 @@ By default, using the Euclidean distance as a standard. As the distance measure 
   We can see that with most of the high values in purple being in the top left, that is where medians lay for the data.
 Next I use kmeans package to cluster with 3 clusters and 21 restarts since there are 21 pharmacuetical companies. I chose to do 3 clusters becuase that would have 7 pharmacuwtical companies in each cluster and an even total of three clusters. Having 3 clusters is also benifical becuase you can get a majority, 2 out of 3 clusters, if they look and act alike to help tell the story on the data.
 ![Distance Plot fviz_dist.](DistancePlot fviz.png)
+![DistancePlot fviz](https://user-images.githubusercontent.com/85630709/140676111-0cc6a870-5bf9-41d1-ba68-ba3ae93dfb35.png)
 k3 <- kmeans(distance, centers = 3, nstart=21)
 > k3$centers
          1        2        3        4        5        6        7        8
@@ -51,6 +52,7 @@ k3 <- kmeans(distance, centers = 3, nstart=21)
 3 4.458975 3.091979 2.002669 2.795271 3.674740
 Next we look at the size of the clusters and can see that the varities are spead very low or high which matches the results shown in the distance measure and visualized plot. 
 ![Cluster fviz_clusters.](fviz_cluster 3 clusters.png)
+![fviz_cluster 3 clusters](https://user-images.githubusercontent.com/85630709/140676129-0e7386a2-2e65-4cd1-ad60-d5a818c28079.png)
 > k3$size
 [1]  5  5 11
 I next visualize the cluster so we can better understand what each cluster is telling us. Here we see clusters one and two which include the first 7 pharmacies each, 14 total, seem to show and represent closer data than the next 7 pharmacies making up the third cluster.
@@ -66,6 +68,7 @@ cluster sizes:
  5 11  5 
 Next, I went ahead and looked at this as an image rather than just nummbers. Clusters to me are often easier to visualize and tell informaition off of rather than looking at the raw data.
 ![Clustering manhattan.](kmeans clustering manhattan.png)
+![kmeans clustering manhattan](https://user-images.githubusercontent.com/85630709/140676194-cc0edc7b-1f45-4c75-82a8-203e5858352b.png)
 > clusters_predictions <- predict(k3)
 > image(k3)
 > points(distance, col=clusters_predictions, pch=21, cex=.03)
@@ -78,6 +81,6 @@ D)
 Cluster 1: The Littles: Low leverages, low market caps, low net profits, moderate sells, low assett turnover, low ROA
 Cluster 2: The Superiors: High ROA and ROE, high market caps, high leverage, high rev growth, high net profit margin
 Cluster 3: The Middles: Average leverages, average ROA and ROE, hold recommendations, average leverage and rev growth
-![Caption for the picture.](DistancePlot fviz.png)
+
 
  
