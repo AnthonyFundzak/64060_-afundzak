@@ -80,6 +80,7 @@ fit7 <- kmeans(Cereal2, centers = 7, nstart = 10)
 -- The data should be normalized becuase there are some values of 0 and other single digit numbers in various columns to having values in hundreds for sodium and other columns of the data set. Normalizing the data will allow the data to be more. It will allow the data be more of an accurate predictor more so it would have been if it was not normalized. The cluster with the healthiest cereals includes the cereals that make up the highest ratings; All-Bran_with_Extra_Fiber, Shredded_Wheat_'n'Bran, Shredded_Wheat_spoon_size, 100%_Bran,Shredded_Wheat, Puffed_Wheat.
 
 >find.clusters(x, rating>60.0)
+![Image 11-29-21 at 2 01 PM](https://user-images.githubusercontent.com/85630709/143970922-470e575e-4cb1-4c99-a0ab-8530912e4914.jpeg)
 
 
 
