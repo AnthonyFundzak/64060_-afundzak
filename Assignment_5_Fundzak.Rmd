@@ -1,0 +1,86 @@
+---
+title: "Assignment_5_Fundzak"
+author: "Anthony Fundzak"
+date: "11/29/2021"
+output: html_document
+---
+> library(cluster) : to be able to use the hclust function
+> library(stats) : to be able to use the agnes function
+> Cereals <- read_csv("~/Desktop/Machine Learning/Cereals.csv")
+
+#### Removing all cereals with missing values:
+
+> Cereal2 <- na.omit(Cereals) # - Remove NA
+> head(Cereal2)
+
+#### Using hierarchial clustering, it is easier to understand and read data if you have clear row names. So to capitalize on this method, the below code is how I changed the Cereals into a row name.
+
+> rownames(Cereals) <- Cereals$name
+
+#### Apply Hierarchial clustering using euclidean distance to normalize the measumenets as follows:
+
+> DIST <- dist(Cereal2, method = "euclidean")
+-Use Anges to compare the clustering from single linkage, complete linkage, average linkage, and ward. 
+> HC_fitSingle <- agnes(Cereal2, method = "single")
+> HC_fitComplete <- agnes(Cereal2, method = "complete")
+> HC_fitAverage <- agnes(Cereal2, method = "average")
+> HC_fitWard <- hclust(DIST, method = "ward.D2")
+
+--To determne which method is best after looking at the data and looking at the visulaized plots, in the following way, I beleive that Complete method of agnes IS THE BEST METHOD. Complete method has the highest agglomerative coefficient
+
+> plot(HC_fitSingle) ac= .69
+> plot(HC_fitComplete) ac = .91
+> plot(HC_fitAverage) ac = .82
+> plot(HC_fitWard)
+
+#### How many clusters would i choose?
+
+--I would chose 6 clusters for the data. I would chose 6 because a list of length of 6 comes back which encompasses all of the cereals in the data set. 6 clusters also comes close to the agglomerative coefficient of 9 which can hint at how many optimal clusters are needed for the data set. 6 clusters also shows a clear grouping of the cereals with respect to each level it comes from on the original dendrogram.
+
+> rect.hclust(HC_Complete, k = 6, border = 1:6)
+
+#### Commenting on the structure of the clusters and their stability.
+
+--I would use the rect.hclust to create my 6 rectangles/clusters to have formed around the data in a clear and presentable manner. By using kmeans and inputing my number of clusters to 9, it will show data that agrees with the selection of 9 clusters for the cereal data set.
+
+> rect.hclust(HC_Complete, k = 6, border = 1:9)
+> plot(HC_fitWard)
+> clusters <- kmeans(Cereal2[,6], 6)
+> View(clusters)
+> str(clusters)
+List of 9
+ $ cluster     : int [1:74] 7 1 1 1 6 6 8 2 3 5 ...
+ $ centers     : num [1:6, 1] 8 15 13 13.9 11.9 ...
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : chr [1:6] "1" "2" "3" "4" ...
+  .. ..$ : chr "carbo"
+ $ totss       : num 1106
+ $ withinss    : num [1:6] 2 0 0 0.214 0.219 ...
+ $ tot.withinss: num 25.9
+ $ betweenss   : num 1080
+ $ size        : int [1:6] 4 8 8 7 8 9 1 16 13
+ $ iter        : int 2
+ $ ifault      : int 0
+ - attr(*, "class")= chr "kmeans"
+ 
+ -- comparing 2 cluster solutions to each other
+> library(fpc)
+fit4 <- kmeans(Cereal2, centers = 4, nstart = 10)
+> cluster.stats(d, fit4$cluster, fit6$cluster)
+fit5 <- kmeans(Cereal2, centers = 5, nstart = 10)
+> cluster.stats(d, fit5$cluster, fit6$cluster)
+fit6 <- kmeans(Cereal2, centers = 6, nstart = 10)
+fit7 <- kmeans(Cereal2, centers = 7, nstart = 10)
+> cluster.stats(d, fit6$cluster, fit7$cluster)
+
+-- From the above we can see how 6 clusters shows a structure of stability and equalness between all 6 clusters. The size of each cluster, how many integers are in each cluster, have a close mean and median showing the clusters fit well and are stable. The centers, indicated the centroids of the clusters, again all encompass a close median and mean showing the clusters strength with the total of 6 fitting well. 
+
+####Finding a cluster of "Healthy Cereals". Should the data be normalized, if not how should they be used in the cluster analysis?
+
+-- The data should be normalized becuase there are some values of 0 and other single digit numbers in various columns to having values in hundreds for sodium and other columns of the data set. Normalizing the data will allow the data to be more. It will allow the data be more of an accurate predictor more so it would have been if it was not normalized. The cluster with the healthiest cereals includes the cereals that make up the highest ratings; All-Bran_with_Extra_Fiber, Shredded_Wheat_'n'Bran, Shredded_Wheat_spoon_size, 100%_Bran,Shredded_Wheat, Puffed_Wheat.
+
+>find.clusters(x, rating>60.0)
+
+
+
+
