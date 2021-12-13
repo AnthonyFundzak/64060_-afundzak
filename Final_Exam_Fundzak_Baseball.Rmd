@@ -1,0 +1,152 @@
+---
+title: "Final Coding and Explanations"
+author: "Anthony Fundzak"
+date: "12/11/2021"
+output:
+  html_document: default
+  pdf_document: default
+---
+##library(readxl)
+CLEGuardiansData <- read_excel("~/Desktop/Machine Learning/CLEGuardiansData.csv")
+View(CLEGuardiansData)
+> library(ggplot2)
+> library(dplyr)
+> library(graphics)
+> library(rmarkdown)
+> library(stats)
+> library(tidyr)
+
+##The business of sport and the teams within the sport is directly and most impacted directly by the perfromance of the team. Making trades, signings, cuts or any other roster move directly impacts the buisness of the team and can change millions of dollars in profits or losses for the team through ticket sales, merchandise, and other forms of revenue lines. Making roster decisions is something that goes on everyday within the teams front office so that is why I chose this side of business, the sport business world, as my final project. At the end of Major League Baseball seasons, front offices need to cluster and illustrate their players throughout the organization showing their performance and which players stood above the rest. This will help them identify how to make upcoming roster adjustments and anything else to do with the roster. For my case, I am specifically going to be looking at the 2021 Cleveland Guardians and players who recorded stats on the  main man roster. The goal of this is to illustrate visual explanations and summaries to better understand where each player compares to others that played on the active man roster throughout the season.
+
+--For this specific project, I will be looking at only Position players, no pitchers.
+
+## Removing Pitchers from the Data set to have only posistion players
+> NoPitchers <-subset(CLEGuardiansData, Pos!="P")
+
+## Summary of the Data for a general overview to see how the team stands as a whole with important averages in batting, slugging percentages, and strike outs.
+ >summary(NoPitchers)
+     Pos                Name                Age              G                PA              AB       
+ Length:24          Length:24          Min.   :22.00   Min.   :  9.00   Min.   : 17.0   Min.   : 14.0  
+ Class :character   Class :character   1st Qu.:25.00   1st Qu.: 39.00   1st Qu.:119.0   1st Qu.: 99.5  
+ Mode  :character   Mode  :character   Median :26.00   Median : 68.50   Median :244.0   Median :223.5  
+                                       Mean   :27.42   Mean   : 66.79   Mean   :245.4   Mean   :221.5  
+                                       3rd Qu.:29.00   3rd Qu.: 90.75   3rd Qu.:321.0   3rd Qu.:289.2  
+                                       Max.   :37.00   Max.   :152.00   Max.   :636.0   Max.   :552.0  
+       R                H                2B              3B               HR              RBI        
+ Min.   :  1.00   Min.   :  1.00   Min.   : 0.00   Min.   :0.0000   Min.   : 0.000   Min.   :  0.00  
+ 1st Qu.: 11.25   1st Qu.: 18.50   1st Qu.: 3.00   1st Qu.:0.0000   1st Qu.: 2.750   1st Qu.:  9.00  
+ Median : 27.50   Median : 49.50   Median : 9.50   Median :0.0000   Median : 7.000   Median : 19.50  
+ Mean   : 29.88   Mean   : 52.79   Mean   :10.33   Mean   :0.9167   Mean   : 8.458   Mean   : 28.58  
+ 3rd Qu.: 37.50   3rd Qu.: 69.00   3rd Qu.:15.25   3rd Qu.:1.0000   3rd Qu.: 9.250   3rd Qu.: 41.00  
+ Max.   :111.00   Max.   :155.00   Max.   :32.00   Max.   :6.0000   Max.   :36.000   Max.   :103.00  
+       SB               CS               BB              SO               BA              OBP        
+ Min.   : 0.000   Min.   :0.0000   Min.   : 1.00   Min.   :  6.00   Min.   :0.0710   Min.   :0.2200  
+ 1st Qu.: 0.000   1st Qu.:0.0000   1st Qu.: 8.50   1st Qu.: 27.00   1st Qu.:0.2070   1st Qu.:0.2737  
+ Median : 1.000   Median :0.0000   Median :14.50   Median : 52.00   Median :0.2275   Median :0.2950  
+ Mean   : 4.542   Mean   :0.7083   Mean   :18.83   Mean   : 57.42   Mean   :0.2220   Mean   :0.2915  
+ 3rd Qu.: 7.500   3rd Qu.:1.0000   3rd Qu.:26.00   3rd Qu.: 87.00   3rd Qu.:0.2532   3rd Qu.:0.3105  
+ Max.   :27.000   Max.   :4.0000   Max.   :72.00   Max.   :149.00   Max.   :0.2850   Max.   :0.3620  
+      SLG              OPS              OPS+              TB              GDP              HBP        
+ Min.   :0.1430   Min.   :0.3780   Min.   :  8.00   Min.   :  2.00   Min.   : 0.000   Min.   : 0.000  
+ 1st Qu.:0.3427   1st Qu.:0.6305   1st Qu.: 71.75   1st Qu.: 38.00   1st Qu.: 1.000   1st Qu.: 0.750  
+ Median :0.3830   Median :0.6890   Median : 86.00   Median : 83.50   Median : 3.000   Median : 2.000  
+ Mean   :0.3787   Mean   :0.6700   Mean   : 82.38   Mean   : 90.33   Mean   : 4.375   Mean   : 2.667  
+ 3rd Qu.:0.4208   3rd Qu.:0.7328   3rd Qu.: 99.00   3rd Qu.:109.25   3rd Qu.: 7.000   3rd Qu.: 3.250  
+ Max.   :0.5380   Max.   :0.8930   Max.   :141.00   Max.   :297.00   Max.   :13.000   Max.   :15.000  
+       SH               SF          IBB\\         
+ Min.   :0.0000   Min.   :0.0   Length:24         
+ 1st Qu.:0.0000   1st Qu.:0.0   Class :character  
+ Median :0.0000   Median :1.0   Mode  :character  
+ Mean   :0.8333   Mean   :1.5                     
+ 3rd Qu.:1.0000   3rd Qu.:3.0                     
+ Max.   :7.0000   Max.   :5.0  
+
+## G= Games, PA= Plate Apperances, AB= At Bats, R= Runs, H= Hits, 2B= Doubles, 3B= Triples, HR= Home Runs,RBI=Runs Batted In, SB=Stolen Bases, CS= Caught Stealing, BB= Walks, SO= Strike Outs, BA= Batting Average, OBP= On Base Percentage, SLG= Slugging Percentage, OPS= On base + Slugging, OPS+= On base + slugging Plus, TB=Total Bases, GDP= Ground into Double Play, HBP= Hit by Pitch, SH= Sacrafice Hits, SF= Sacrafice Flys.
+
+## Finding a histogram of the batting averages can show a good representation of the distribution across the players in the data set. As you can sde from the following below histogram, the mean batting averages ranges between .200 and .250 which for MLB standards is low.This in tern lets the front office know they need to target more players than can hit on a higher consitent average. 
+> hist(BattingAverages)
+![Histogram.](histogram BA.png)
+
+## Finding a scatter plot through ggplot can show each player on a scale as to where they are compared with other playes in the data being tested. This scatter plot shows the front office whihc of their posistion players at the most hits compared to at bats, another way of looking at the batting average in the histogram. It gives the front office the business decision of what to do with the player as they can compare players to players and compare visualizations from year to year.
+>NoPitchers %>% ggplot(aes(x=H, y=AB, color= Name)) + geom_point()
+![ScatterPlot.](Scatter BA.png)
+
+##K-Means Clustering to show clusters of players. Showing clusters of players allows us to see where each player stands with eachother. The business decision that can be made off of this is knowing which players are similar to each other in each others games, leading the front office to make adjustments to the roster to get rid of the worse players in hope to imporve the teams future performance.
+-- I remove these columns because they are values of NA/NaN/Inf which K-Means cannot handle.
+> NoPitchersKMeans<- NoPitchers[ -c(1,27) ]
+> NoPitchersKMeans2 <- kmeans(NoPitchersKMeans, centers = 3, nstart=25)
+
+--I chose 3 centers becasue it was accompinied by 24 posisition players that made they active roster throughout the season. Fitting 3 clusters with 8 players comes to 33.33% in each cluster which is a great starting point to equally divide the players. 
+
+> NoPitchersKMeans2$centers
+       Age         G        PA        AB         R         H        2B        3B        HR       RBI         SB
+1 25.72727  77.81818 275.00000 250.36364 31.181818  58.36364 12.181818 0.6363636  7.363636 29.181818  5.7272727
+2 29.55556  27.00000  83.77778  73.88889  7.666667  14.44444  2.444444 0.0000000  3.000000  8.111111  0.2222222
+3 27.25000 126.00000 527.50000 474.00000 76.250000 123.75000 23.000000 3.7500000 23.750000 73.000000 11.0000000
+         CS       BB        SO        BA       OBP       SLG       OPS      OPS+        TB       GDP       HBP
+1 0.7272727 17.81818  65.90909 0.2315455 0.2904545 0.3740909 0.6643636  80.90909  93.90909  4.727273 3.8181818
+2 0.4444444  8.00000  23.00000 0.1941111 0.2771111 0.3414444 0.6183333  68.88889  25.88889  1.000000 0.6666667
+3 1.2500000 46.00000 111.50000 0.2582500 0.3267500 0.4750000 0.8020000 116.75000 225.50000 11.000000 4.0000000
+  SH        SF
+1  1 1.9090909
+2  1 0.1111111
+3  0 3.5000000
+> NoPitchersKMeans2$size
+[1] 11  9  4
+
+--This shows the main size of the clusters. By having 11 people in the first cluster and 9 in the middle cluster, this tells us the majority of the players where low caliber to middle tier with their batting and other offensive numbers. This aligns correctly with the 2021 Cleveland Guardians as the team had a poor record and had a near league low in offensive runs per game, again backed by the stats and data discovered above. The cluster of 4, the Guardians best players shwos the front office who to invest in and build their team/business of the team around. 
+
+> str(NoPitchersKMeans2)
+List of 9
+ $ cluster     : int [1:24] 1 1 3 3 3 1 1 1 3 1 ...
+ $ centers     : num [1:3, 1:24] 25.7 29.6 27.2 77.8 27 ...
+  ..- attr(*, "dimnames")=List of 2
+  .. ..$ : chr [1:3] "1" "2" "3"
+  .. ..$ : chr [1:24] "Age" "G" "PA" "AB" ...
+ $ totss       : num 1460853
+ $ withinss    : num [1:3] 71906 50729 79361
+ $ tot.withinss: num 201996
+ $ betweenss   : num 1258856
+ $ size        : int [1:3] 11 9 4
+ $ iter        : int 2
+ $ ifault      : int 0
+ - attr(*, "class")= chr "kmeans"
+> fviz_cluster(NoPitchersKMeans2, data = distance)
+
+--Below, I am curious about the  umber of clusters to be used to put the 24 players into. So to expand on having 3 clusters, I decided to do clusters of 4,5, and 6.These visualiztions show that the clusters are narrow, longated and do not reflect the data as best as they can. As the clusters begin to increase on the way to 6 clusters, it becomes more evident that the players group further down into the poor offensive performance cluster rather than the prefered far right, better offensive stats group/cluster.
+
+> NoPitchersKMeans4 <- kmeans(NoPitchersKMeans, centers = 4, nstart=25)
+> NoPitchersKMeans5 <- kmeans(NoPitchersKMeans, centers = 5, nstart=25)
+> NoPitchersKMeans6 <- kmeans(NoPitchersKMeans, centers = 6, nstart=25)
+> fviz_cluster(NoPitchersKMeans4, data = distance)
+> fviz_cluster(NoPitchersKMeans5, data = distance)
+> fviz_cluster(NoPitchersKMeans6, data = distance)
+![4Clusters.](4 clusters.png)
+![5Clusters.](5 clusters.png)
+![6Clusters.](6 clusters.png)
+
+-- Finding the optimal number of clusters using Average Silhoutette Method. This is the optimal method I believe because it determines how well each player/object lies within the clusters. The hihger the average the great indication of the best number of clusters. This method using different amounts of K (clusters) to determine the optimal fit. Showing in easy to read graphs is the main benefit since all stakeholders are able to understand these simple data visualizations.
+
+> library(cluster)
+> avg_sil <- function(k) { km.res <- kmeans(NoPitchers, centers = k, nstart = 25)
++ ss <- silhouette(km.res$cluster, dist(NoPitchers))
++ mean(ss[, 3])}
+> avg_sil_values <- map_dbl(k.values, avg_sil)
+> plot(k.values, avg_sil_values,
++      type = "b", pch = 24, frame = FALSE, 
++      xlab = "Number of clusters K",
++      ylab = "Average Clusters")
+![AVG_Cluster.](AVG_Sil.png)
+>fviz_nbclust(NoPitchers, kmeans, method = "silhouette")
+![FVIZ_Cluster.](Optimal_Clusters_Avg_Sil.png)
+-- The result here of the optimal number clusters of 3, shown above, holds consistent with the findings of the original kmeans clustering. The number of 3 clusters comes with the highest average of silhouette width indicating that is the best fit number of clusters for the Indians posistion players who appeared on the active roster this season. Fviz_nbclust is a great use here because of its ability to draw a verticle line where the optimal number of clusters is. 
+
+## Once again, The business of sport and the teams within the sport is directly and most impacted directly by the perfromance of the team. Making trades, signings, cuts or any other roster move directly impacts the buisness of the team and can change millions of dollars in profits or losses for the team through ticket sales, merchandise, and other forms of revenue lines. Making roster decisions is something that goes on everyday within the teams front office so that is why I chose this side of business, the sport business world, as my final project. My findings above use the 2021 Cleveland Guardians active 25 man roster posistion players throughout the year to compare stats and cluster the players to help a front office make decisions on roster moves that will without a doubt have a business impact on the organization as a whole.
+
+## Data Source ##
+https://www.baseball-reference.com/teams/CLE/2021.shtml#all_team_batting
+
+
+
+
+
